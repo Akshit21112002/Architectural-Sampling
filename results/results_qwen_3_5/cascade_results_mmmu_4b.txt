@@ -1,0 +1,181 @@
+CV-Bench Cascade Evaluation
+============================================================
+Model:        /leonardo_work/EUHPC_D29_031/models/Qwen3.5-4B
+Dataset dir:  /leonardo_work/EUHPC_D29_031/data/mmmu
+N samples:    801
+K_eval:       [1, 2, 4]
+block range:  [0, 5]
+window:       3 (stride 1)
+variations:   9
+temp baseline: temp=0.6, n_temp=9
+
+Per-variation results
+------------------------------------------------------------
+ var |   K |    blocks | attempted | solved | cum_solved |  cum_acc%
+   0 |   1 | [ 1, 3] |       801 |    136 |        136 |    16.98%
+   1 |   2 | [ 0, 2] |       665 |     47 |        183 |    22.85%
+   2 |   2 | [ 1, 3] |       618 |     28 |        211 |    26.34%
+   3 |   2 | [ 2, 4] |       590 |     21 |        232 |    28.96%
+   4 |   2 | [ 3, 5] |       569 |     22 |        254 |    31.71%
+   5 |   4 | [ 0, 2] |       547 |      9 |        263 |    32.83%
+   6 |   4 | [ 1, 3] |       538 |     40 |        303 |    37.83%
+   7 |   4 | [ 2, 4] |       498 |     32 |        335 |    41.82%
+   8 |   4 | [ 3, 5] |       466 |     36 |        371 |    46.32%
+
+Per-task breakdown
+------------------------------------------------------------
+  American Literature  1/1  (100.00%)
+  Analog Electronics  1/1  (100.00%)
+  Animal Behavior  1/1  (100.00%)
+  Animal Nutrition  1/1  (100.00%)
+  Art Criticism  1/1  (100.00%)
+  Art History  11/22  (50.00%)
+  Artificial Intelligence  2/4  (50.00%)
+  Biochemistry  1/1  (100.00%)
+  Biochemistry and Genetics  1/2  (50.00%)
+  Biochemistry for Pharmaceutical Sciences  1/1  (100.00%)
+  Biological Psychology  3/9  (33.33%)
+  Biostatistics  2/4  (50.00%)
+  Calculus    5/10  (50.00%)
+  Cardiovascular Medicine  0/1  (0.00%)
+  Cardiovascular Physiology  2/2  (100.00%)
+  Cell Biology  1/2  (50.00%)
+  Cellular Physiology  5/6  (83.33%)
+  Children's Literature  15/20  (75.00%)
+  Civil Engineering  2/4  (50.00%)
+  Classical Mechanics  2/11  (18.18%)
+  Clinical Medicine  4/10  (40.00%)
+  Clinical Pathology  5/9  (55.56%)
+  Clinical Psychology  0/1  (0.00%)
+  Clinical Radiology  4/8  (50.00%)
+  Cognitive Psychology  4/10  (40.00%)
+  Comparative Literature  1/1  (100.00%)
+  Compiler Principle  2/5  (40.00%)
+  Computer Network  1/1  (100.00%)
+  Contemporary Literature  2/2  (100.00%)
+  Control System  1/3  (33.33%)
+  Corporate Finance  3/10  (30.00%)
+  Cost Management  0/1  (0.00%)
+  Data Structure and Algorithm  1/8  (12.50%)
+  Database    1/3  (33.33%)
+  Dental      0/1  (0.00%)
+  Design History  5/13  (38.46%)
+  Developmental Psychology  1/1  (100.00%)
+  Digital Art  1/1  (100.00%)
+  Drama       2/2  (100.00%)
+  Drawing and Painting  20/23  (86.96%)
+  Ecology     2/2  (100.00%)
+  Econometrics  0/1  (0.00%)
+  Electrical Circuit  4/8  (50.00%)
+  Electrocardiography  0/1  (0.00%)
+  Electromagnetism  5/9  (55.56%)
+  Engineering Dynamics  2/4  (50.00%)
+  Engineering Graphics  3/9  (33.33%)
+  Epidemiology  14/26  (53.85%)
+  European History  1/3  (33.33%)
+  Evolution   2/3  (66.67%)
+  Fashion Design  5/6  (83.33%)
+  Fiction     3/3  (100.00%)
+  Financial Accounting  2/9  (22.22%)
+  Financial Management  0/1  (0.00%)
+  Financial Marketing  1/2  (50.00%)
+  Fine Arts   2/2  (100.00%)
+  Fluid Dynamics  0/1  (0.00%)
+  Fluid Mechanics  4/14  (28.57%)
+  Genetics    1/5  (20.00%)
+  Geometry    1/5  (20.00%)
+  Geotechnical Engineering  3/17  (17.65%)
+  Graph Theory  2/3  (66.67%)
+  Group Theory  2/2  (100.00%)
+  Heat Transfer  2/4  (50.00%)
+  Industrial Design  7/7  (100.00%)
+  Inorganic Chemistry  0/7  (0.00%)
+  Interior Design  3/3  (100.00%)
+  International Geography Olympiad  1/4  (25.00%)
+  Investment  3/9  (33.33%)
+  Macroeconomics  11/19  (57.89%)
+  Management Models  6/14  (42.86%)
+  Managerial Accounting  4/12  (33.33%)
+  Managerial Finance  3/9  (33.33%)
+  Market Research  7/29  (24.14%)
+  Materials Science  1/4  (25.00%)
+  Mechanical Design  2/6  (33.33%)
+  Mechanical Vibrations  0/2  (0.00%)
+  Mechanics of Materials  7/26  (26.92%)
+  Medicinal Chemistry  7/18  (38.89%)
+  Microbiology  3/3  (100.00%)
+  Microbiology and Immunology  0/1  (0.00%)
+  Microeconomics  3/3  (100.00%)
+  Modern History  4/4  (100.00%)
+  Molecular Biology  0/1  (0.00%)
+  Music       9/25  (36.00%)
+  Neuroanatomy  0/1  (0.00%)
+  Neuropathology  9/15  (60.00%)
+  Neurophysiology  1/2  (50.00%)
+  Nuclear Physics  2/4  (50.00%)
+  Operating System  2/4  (50.00%)
+  Operation Research  1/7  (14.29%)
+  Ophthalmic Pathology  1/1  (100.00%)
+  Optics      1/5  (20.00%)
+  Organic Chemistry  4/8  (50.00%)
+  Pathology   3/10  (30.00%)
+  Pathophysiology  9/14  (64.29%)
+  Pharmaceutical Microbiology  1/3  (33.33%)
+  Pharmacology and Drug Synthesis  0/2  (0.00%)
+  Photography  1/2  (50.00%)
+  Physical Chemistry  0/1  (0.00%)
+  Physical Geography  4/5  (80.00%)
+  Physiology  1/5  (20.00%)
+  Plant Pathology  14/27  (51.85%)
+  Principals of Economics  1/4  (25.00%)
+  Principles of Management  5/7  (71.43%)
+  Project Management  1/1  (100.00%)
+  Radiology   2/2  (100.00%)
+  Sculpture   1/2  (50.00%)
+  Signal Processing  1/7  (14.29%)
+  Social Psychology  4/4  (100.00%)
+  Sociology Theory  19/30  (63.33%)
+  Soil Science  1/1  (100.00%)
+  Strategic Management  0/1  (0.00%)
+  Structural Engineering  2/4  (50.00%)
+  Surveying and Mapping  4/20  (20.00%)
+  Thermodynamics  2/12  (16.67%)
+  U.S. History  4/6  (66.67%)
+  Visual Arts  0/1  (0.00%)
+  Visual Culture  1/2  (50.00%)
+  World History  10/15  (66.67%)
+  mmmu        1/3  (33.33%)
+
+Per-variation x per-task (samples newly solved)
+------------------------------------------------------------
+ var |   K |    blocks | American Literature | Analog Electronics | Animal Behavior | Animal Nutrition | Art Criticism | Art History | Artificial Intelligence | Biochemistry | Biochemistry and Genetics | Biochemistry for Pharmaceutical Sciences | Biological Psychology | Biostatistics |   Calculus | Cardiovascular Medicine | Cardiovascular Physiology | Cell Biology | Cellular Physiology | Children's Literature | Civil Engineering | Classical Mechanics | Clinical Medicine | Clinical Pathology | Clinical Psychology | Clinical Radiology | Cognitive Psychology | Comparative Literature | Compiler Principle | Computer Network | Contemporary Literature | Control System | Corporate Finance | Cost Management | Data Structure and Algorithm |   Database |     Dental | Design History | Developmental Psychology | Digital Art |      Drama | Drawing and Painting |    Ecology | Econometrics | Electrical Circuit | Electrocardiography | Electromagnetism | Engineering Dynamics | Engineering Graphics | Epidemiology | European History |  Evolution | Fashion Design |    Fiction | Financial Accounting | Financial Management | Financial Marketing |  Fine Arts | Fluid Dynamics | Fluid Mechanics |   Genetics |   Geometry | Geotechnical Engineering | Graph Theory | Group Theory | Heat Transfer | Industrial Design | Inorganic Chemistry | Interior Design | International Geography Olympiad | Investment | Macroeconomics | Management Models | Managerial Accounting | Managerial Finance | Market Research | Materials Science | Mechanical Design | Mechanical Vibrations | Mechanics of Materials | Medicinal Chemistry | Microbiology | Microbiology and Immunology | Microeconomics | Modern History | Molecular Biology |      Music | Neuroanatomy | Neuropathology | Neurophysiology | Nuclear Physics | Operating System | Operation Research | Ophthalmic Pathology |     Optics | Organic Chemistry |  Pathology | Pathophysiology | Pharmaceutical Microbiology | Pharmacology and Drug Synthesis | Photography | Physical Chemistry | Physical Geography | Physiology | Plant Pathology | Principals of Economics | Principles of Management | Project Management |  Radiology |  Sculpture | Signal Processing | Social Psychology | Sociology Theory | Soil Science | Strategic Management | Structural Engineering | Surveying and Mapping | Thermodynamics | U.S. History | Visual Arts | Visual Culture | World History |       mmmu
+   0 |   1 | [ 1, 3] |          0 |          0 |          0 |          0 |          0 |          1 |          0 |          1 |          0 |          0 |          1 |          0 |          4 |          0 |          1 |          1 |          2 |          9 |          0 |          1 |          1 |          1 |          0 |          2 |          0 |          1 |          0 |          0 |          1 |          0 |          0 |          0 |          1 |          1 |          0 |          2 |          0 |          1 |          2 |          5 |          0 |          0 |          4 |          0 |          3 |          0 |          1 |          1 |          0 |          1 |          1 |          1 |          0 |          0 |          1 |          2 |          0 |          3 |          1 |          0 |          1 |          1 |          0 |          2 |          5 |          0 |          3 |          0 |          1 |          1 |          2 |          0 |          1 |          3 |          0 |          0 |          0 |          4 |          5 |          2 |          0 |          1 |          1 |          0 |          3 |          0 |          4 |          0 |          0 |          1 |          1 |          0 |          1 |          1 |          2 |          5 |          0 |          0 |          0 |          0 |          2 |          0 |          4 |          0 |          0 |          1 |          0 |          0 |          1 |          1 |          8 |          0 |          0 |          2 |          3 |          1 |          2 |          0 |          0 |          2 |          0
+   1 |   2 | [ 0, 2] |          0 |          1 |          0 |          1 |          0 |          0 |          1 |          0 |          0 |          0 |          1 |          0 |          0 |          0 |          1 |          0 |          0 |          1 |          0 |          0 |          1 |          0 |          0 |          0 |          0 |          0 |          0 |          0 |          0 |          1 |          0 |          0 |          0 |          0 |          0 |          0 |          0 |          0 |          0 |          1 |          1 |          0 |          0 |          0 |          0 |          0 |          1 |          4 |          1 |          0 |          0 |          0 |          1 |          0 |          0 |          0 |          0 |          0 |          0 |          0 |          0 |          0 |          0 |          0 |          0 |          0 |          0 |          1 |          0 |          3 |          1 |          1 |          1 |          2 |          0 |          0 |          0 |          2 |          1 |          0 |          0 |          1 |          0 |          0 |          2 |          0 |          1 |          0 |          1 |          1 |          0 |          0 |          0 |          0 |          0 |          1 |          0 |          0 |          0 |          0 |          1 |          1 |          0 |          0 |          2 |          0 |          0 |          0 |          0 |          1 |          1 |          0 |          0 |          0 |          0 |          1 |          1 |          0 |          0 |          2 |          1
+   2 |   2 | [ 1, 3] |          0 |          0 |          1 |          0 |          0 |          0 |          0 |          0 |          0 |          0 |          0 |          0 |          1 |          0 |          0 |          0 |          1 |          2 |          0 |          0 |          0 |          0 |          0 |          0 |          0 |          0 |          0 |          0 |          0 |          0 |          1 |          0 |          0 |          0 |          0 |          0 |          0 |          0 |          0 |          0 |          0 |          0 |          0 |          0 |          1 |          1 |          0 |          4 |          0 |          1 |          2 |          0 |          0 |          0 |          0 |          0 |          0 |          1 |          0 |          1 |          1 |          0 |          1 |          0 |          0 |          0 |          0 |          0 |          1 |          2 |          0 |          1 |          0 |          0 |          0 |          1 |          0 |          1 |          0 |          0 |          0 |          0 |          0 |          0 |          0 |          0 |          0 |          1 |          0 |          0 |          0 |          0 |          0 |          1 |          0 |          0 |          0 |          0 |          0 |          0 |          0 |          0 |          0 |          0 |          0 |          0 |          0 |          0 |          0 |          0 |          0 |          1 |          0 |          0 |          0 |          0 |          0 |          0 |          0 |          0 |          0
+   3 |   2 | [ 2, 4] |          0 |          0 |          0 |          0 |          0 |          0 |          0 |          0 |          0 |          0 |          0 |          1 |          0 |          0 |          0 |          0 |          1 |          1 |          0 |          0 |          0 |          0 |          0 |          0 |          0 |          0 |          0 |          0 |          0 |          0 |          1 |          0 |          0 |          0 |          0 |          0 |          0 |          0 |          0 |          4 |          0 |          0 |          0 |          0 |          0 |          0 |          0 |          0 |          0 |          0 |          1 |          1 |          0 |          0 |          0 |          0 |          0 |          0 |          0 |          0 |          0 |          0 |          0 |          0 |          0 |          0 |          0 |          0 |          0 |          0 |          3 |          0 |          0 |          0 |          0 |          1 |          0 |          0 |          0 |          0 |          0 |          0 |          0 |          0 |          1 |          0 |          0 |          0 |          0 |          0 |          0 |          0 |          0 |          0 |          0 |          0 |          0 |          0 |          0 |          0 |          0 |          0 |          0 |          1 |          0 |          0 |          0 |          0 |          0 |          0 |          3 |          0 |          0 |          0 |          0 |          0 |          1 |          0 |          1 |          0 |          0
+   4 |   2 | [ 3, 5] |          0 |          0 |          0 |          0 |          0 |          1 |          0 |          0 |          0 |          0 |          0 |          0 |          0 |          0 |          0 |          0 |          0 |          0 |          1 |          0 |          0 |          0 |          0 |          0 |          1 |          0 |          0 |          0 |          0 |          0 |          0 |          0 |          0 |          0 |          0 |          0 |          1 |          0 |          0 |          2 |          0 |          0 |          0 |          0 |          1 |          0 |          0 |          1 |          0 |          0 |          1 |          1 |          0 |          0 |          0 |          0 |          0 |          0 |          0 |          0 |          1 |          0 |          0 |          0 |          1 |          0 |          0 |          0 |          0 |          1 |          0 |          1 |          0 |          0 |          0 |          0 |          0 |          0 |          0 |          0 |          0 |          1 |          0 |          0 |          1 |          0 |          0 |          0 |          0 |          0 |          0 |          0 |          0 |          0 |          1 |          0 |          0 |          0 |          0 |          0 |          0 |          0 |          0 |          0 |          1 |          0 |          0 |          1 |          0 |          0 |          3 |          0 |          0 |          0 |          0 |          0 |          0 |          0 |          0 |          0 |          0
+   5 |   4 | [ 0, 2] |          0 |          0 |          0 |          0 |          0 |          1 |          0 |          0 |          0 |          0 |          0 |          0 |          0 |          0 |          0 |          0 |          0 |          0 |          1 |          0 |          0 |          0 |          0 |          1 |          0 |          0 |          0 |          0 |          0 |          0 |          0 |          0 |          0 |          0 |          0 |          0 |          0 |          0 |          0 |          0 |          0 |          0 |          0 |          0 |          0 |          0 |          0 |          0 |          0 |          0 |          0 |          0 |          0 |          0 |          0 |          0 |          0 |          0 |          0 |          0 |          0 |          0 |          1 |          0 |          0 |          0 |          0 |          0 |          0 |          1 |          0 |          0 |          0 |          1 |          0 |          0 |          0 |          0 |          0 |          1 |          0 |          0 |          0 |          0 |          0 |          0 |          0 |          0 |          0 |          0 |          0 |          0 |          0 |          0 |          0 |          0 |          0 |          0 |          0 |          0 |          0 |          0 |          0 |          0 |          1 |          0 |          0 |          0 |          0 |          0 |          0 |          0 |          0 |          0 |          0 |          0 |          0 |          0 |          0 |          1 |          0
+   6 |   4 | [ 1, 3] |          0 |          0 |          0 |          0 |          1 |          2 |          1 |          0 |          1 |          0 |          0 |          0 |          0 |          0 |          0 |          0 |          1 |          1 |          0 |          1 |          1 |          2 |          0 |          0 |          1 |          0 |          2 |          0 |          0 |          0 |          0 |          0 |          0 |          0 |          0 |          1 |          0 |          0 |          0 |          3 |          0 |          0 |          0 |          0 |          0 |          0 |          0 |          2 |          0 |          0 |          0 |          0 |          0 |          0 |          0 |          0 |          0 |          0 |          0 |          0 |          0 |          1 |          0 |          0 |          1 |          0 |          0 |          0 |          0 |          0 |          0 |          1 |          0 |          1 |          1 |          0 |          0 |          0 |          1 |          0 |          0 |          0 |          3 |          0 |          1 |          0 |          0 |          0 |          0 |          0 |          0 |          0 |          0 |          1 |          0 |          1 |          0 |          0 |          0 |          0 |          1 |          0 |          1 |          0 |          1 |          0 |          1 |          0 |          0 |          1 |          1 |          0 |          0 |          0 |          1 |          0 |          0 |          0 |          0 |          1 |          0
+   7 |   4 | [ 2, 4] |          0 |          0 |          0 |          0 |          0 |          4 |          0 |          0 |          0 |          1 |          0 |          0 |          0 |          0 |          0 |          0 |          0 |          0 |          0 |          0 |          1 |          0 |          0 |          1 |          1 |          0 |          0 |          0 |          1 |          0 |          0 |          0 |          0 |          0 |          0 |          1 |          0 |          0 |          0 |          2 |          0 |          0 |          0 |          0 |          0 |          0 |          0 |          0 |          0 |          0 |          0 |          0 |          0 |          0 |          0 |          0 |          0 |          0 |          0 |          0 |          0 |          0 |          0 |          0 |          0 |          0 |          0 |          0 |          1 |          1 |          0 |          0 |          1 |          0 |          0 |          0 |          0 |          0 |          0 |          0 |          0 |          0 |          0 |          0 |          0 |          0 |          3 |          0 |          1 |          0 |          0 |          0 |          0 |          1 |          0 |          0 |          1 |          0 |          1 |          0 |          0 |          0 |          4 |          0 |          0 |          0 |          1 |          0 |          0 |          0 |          2 |          0 |          0 |          0 |          0 |          0 |          0 |          0 |          0 |          3 |          0
+   8 |   4 | [ 3, 5] |          1 |          0 |          0 |          0 |          0 |          2 |          0 |          0 |          0 |          0 |          1 |          1 |          0 |          0 |          0 |          0 |          0 |          1 |          0 |          0 |          0 |          2 |          0 |          0 |          1 |          0 |          0 |          1 |          0 |          0 |          1 |          0 |          0 |          0 |          0 |          1 |          0 |          0 |          0 |          3 |          1 |          0 |          0 |          0 |          0 |          1 |          1 |          2 |          0 |          0 |          0 |          0 |          1 |          0 |          0 |          0 |          0 |          0 |          0 |          0 |          0 |          0 |          0 |          0 |          0 |          0 |          0 |          0 |          0 |          2 |          0 |          0 |          0 |          0 |          0 |          0 |          0 |          0 |          0 |          0 |          0 |          0 |          0 |          0 |          1 |          0 |          1 |          0 |          0 |          0 |          0 |          1 |          0 |          0 |          0 |          2 |          0 |          0 |          0 |          0 |          0 |          0 |          5 |          0 |          0 |          0 |          0 |          0 |          0 |          1 |          1 |          0 |          0 |          0 |          0 |          0 |          0 |          0 |          0 |          1 |          0
+
+Best-of-n curves (accuracy %)
+------------------------------------------------------------
+K=1 base (greedy) accuracy: 16.98%
+
+   n |  cascade_bon% |   temp0.6_bon%
+   1 |         16.98 |         17.85
+   2 |         22.85 |         22.10
+   3 |         26.34 |         24.22
+   4 |         28.96 |         26.84
+   5 |         31.71 |         27.72
+   6 |         32.83 |         28.71
+   7 |         37.83 |         29.34
+   8 |         41.82 |         29.84
+   9 |         46.32 |         30.21
+
+Plot saved to: /leonardo_work/EUHPC_D29_031/run_codes_final/results_qwen3_5/cascade_curve_mmmu_4b.png
+
+============================================================
+FINAL: 371/801 = 46.32%
+Unsolved: 430
