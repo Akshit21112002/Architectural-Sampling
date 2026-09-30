@@ -153,7 +153,7 @@ python realworldqa_bon.py \
 
 <!-- FIGURE: best-of-n curves. Drop the image at figures/results_curves.png -->
 <p align="center">
-  <img src="figures/results_curves.png" alt="Best-of-n vs temperature best-of-n accuracy" width="720"/>
+  <img src="figs/mega_qwen3_8b.png" alt="Best-of-n vs temperature best-of-n accuracy" width="720"/>
   <br/>
   <em>Figure 2. Best-of-n (search) vs temperature baseline. (placeholder — add figures/results_curves.png)</em>
 </p>
