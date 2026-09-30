@@ -1,12 +1,4 @@
-# Best-of-n Visual Reasoning with RVD
-### A K / Block-Window Search for Vision-Language Models across Numeric, Multiple-Choice, and Verifiable Tasks
-
-This repository evaluates a **best-of-n decoding strategy** for vision-language
-models (VLMs) and compares it against a **temperature-sampling best-of-n
-baseline** under an identical verifier, across three answer types and three
-model families (Qwen2.5-VL / Qwen3-VL / Qwen3.5-VL).
-
----
+# Architectural Sampling: Test-Time Scaling via Computational Diversity in Frozen Vision-Language Models
 
 ## 1. Introduction
 
