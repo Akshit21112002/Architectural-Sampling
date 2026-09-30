@@ -151,7 +151,7 @@ EVOLUTION_MODE = "all"      # <- change this to ablate which tokens are evolved
 ```
 
 | `EVOLUTION_MODE` | Tokens iterated | Read-back |
-|---|---|---|---|
+|---|---|---|
 | `"vision"` | vision only (text frozen) | final (damped) iterate |
 | `"all"` | vision + text | final iterate | 
 | `"language"` | text only (vision frozen) |
