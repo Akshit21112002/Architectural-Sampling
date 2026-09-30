@@ -52,6 +52,7 @@ pip install -U "transformers==5.16.1"
 
 ### Selecting the model (top of each eval script)
 
+For Files: mcq_bon.py, count_bon.py, realworldqa_bon.py
 Uncomment **exactly one** RVD backend:
 
 ```python
