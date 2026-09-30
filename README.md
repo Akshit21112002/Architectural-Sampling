@@ -67,8 +67,7 @@ import rvd_qwen_2_5_evo as rvd     # Qwen2.5-VL
 
 ## 3. Data
 
-Download and normalize every benchmark **once, on a machine with internet** (e.g.
-a login node), then copy the output folders to the cluster. `download_mcq_datasets.py`
+Download and normalize every benchmark **once, on a machine with internet** then copy the output folders to the cluster. `download_datasets.py`
 writes each dataset with `save_to_disk`, in the exact schema its eval script reads:
 
 ```bash
@@ -81,21 +80,6 @@ python download_mcq_datasets.py --datasets cvbench countbench realworldqa --out_
 # cap samples per dataset while downloading
 python download_mcq_datasets.py --datasets ai2d --limit 2638 --out_root ./vlm_data
 ```
-
-Schemas written (one per eval script):
-
-| Group | For | Columns |
-|---|---|---|
-| MCQ | `mcq_bon.py` | `image, question, choices, answer(letter), task` |
-| Numeric | `count_bon.py` | `image, question, answer(int)` |
-| Verifiable | `realworldqa_bon.py` | `image, question, answer(verbatim)` |
-
-> **HuggingFace repo ids.** The ids/splits for `countbench`, `countqa` and
-> `realworldqa` are set in the `NUMERIC_SOURCES` / `REALWORLDQA_REPO` blocks near
-> the bottom of `download_mcq_datasets.py`. `countqa` defaults to the CountBenchQA
-> repo so `--all` runs out of the box — point it at your own CountQA source if it
-> is a different dataset. If a repo/column differs in your account, that dataset
-> prints `[ERROR] <name> failed: ...` and the others still download.
 
 ---
 
@@ -115,7 +99,7 @@ Shared flags: `--model`, `--dataset_dir`, `--max_samples`, `--K_eval`,
 python mcq_bon.py \
     --model /path/to/Qwen2.5-VL-7B-Instruct \
     --dataset_dir ./vlm_data/cvbench \
-    --max_samples 2638 \
+    --max_samples 5000 \
     --K_eval 1 2 4 \
     --block_min 0 --block_max 5 --block_window 3 --temp 0.6 \
     --output results/mcq_cvbench_bon.txt \
@@ -131,9 +115,9 @@ other MCQ sets with the same command.
 python count_bon.py \
     --model /path/to/Qwen2.5-VL-7B-Instruct \
     --dataset_dir ./vlm_data/countbench \
-    --max_samples 491 \
+    --max_samples 5000 \
     --K_eval 1 2 4 \
-    --block_min 0 --block_max 4 --block_window 3 \
+    --block_min 0 --block_max 5 --block_window 3 \
     --score_metric relerr \
     --output results/count_countbench_bon.txt \
     --plot_output results/count_countbench_bon.png
@@ -147,7 +131,7 @@ python count_bon.py \
 python realworldqa_bon.py \
     --model /path/to/Qwen2.5-VL-7B-Instruct \
     --dataset_dir ./vlm_data/realworldqa \
-    --max_samples 765 \
+    --max_samples 5000 \
     --K_eval 1 2 4 --block_min 0 --block_max 5 --block_window 3 \
     --max_new_tokens 256 \
     --output results/realworldqa_bon.txt \
@@ -180,19 +164,3 @@ see the per-dataset logs and best-of-n curves.**
 
 ---
 
-## 6. Repository layout
-
-```
-count_bon.py               open-ended numeric best-of-n            -> CountBenchQA / CountQA
-mcq_bon.py                 multiple-choice best-of-n               -> CV-Bench / AI2D / MMMU / ...
-realworldqa_bon.py         RealWorldQA verifiable best-of-n
-download_mcq_datasets.py   one-shot dataset downloader (all schemas)
-setup_env.sh               environment installer (torch 2.5.1+cu121, transformers 4.57.0)
-README.md                  this file
-figures/                   figures referenced above (method_overview.png, results_curves.png)
-results/                   .txt reports and .png curves from the runs
-```
-
-Requires your RVD backends on the import path: `rvd_qwen_2_5_evo.py`,
-`rvd_qwen_3_evo.py`, `rvd_qwen_3_5_evo.py` (each exposing `patch_model`, `set_K`,
-and optionally `unpatch_model`).
