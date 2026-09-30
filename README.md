@@ -25,9 +25,7 @@ script:
 # 1. create the environment (Python 3.10)
 conda create -y -n rvd python=3.10
 
-# 2. activate it — source the conda hook first so `conda activate` works
-#    in any shell (this avoids the "Run 'conda init' before 'conda activate'" error)
-source ~/miniconda3/etc/profile.d/conda.sh
+# 2. activate it 
 conda activate rvd
 
 # 3. install torch 2.5.1+cu121, transformers 4.57.0 and the other deps
