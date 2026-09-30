@@ -1,0 +1,48 @@
+Open-ended Numeric Cascade Evaluation
+============================================================
+Model:          /leonardo_work/EUHPC_D29_031/models/Qwen2.5-VL-7B-Instruct
+Dataset dir:    /leonardo_work/EUHPC_D29_031/data/countqa
+N samples:      1001
+Score metric:   relerr
+Solve thresh:   1.0
+K_eval:         [1, 2, 4]
+block range:    [0, 5]  window=3
+variations:     9
+temp baseline:  temp=0.6, n_temp=9, estimator=prefix
+
+FINAL mean closeness (best-of-all): 86.99%
+Solved (>= 1.0): 409/1001   exact: 409/1001
+K=1 base (greedy) mean closeness:   73.92%
+
+Per-variation results
+------------------------------------------------------------
+ var |   K |    blocks | attempted | solved |  cum_mean%
+   0 |   1 | [ 1, 3] |      1001 |    171 |     73.92%
+   1 |   2 | [ 0, 2] |       830 |      3 |     74.40%
+   2 |   2 | [ 1, 3] |       827 |     42 |     77.73%
+   3 |   2 | [ 2, 4] |       785 |     78 |     81.83%
+   4 |   2 | [ 3, 5] |       707 |     49 |     83.64%
+   5 |   4 | [ 0, 2] |       658 |      0 |     83.64%
+   6 |   4 | [ 1, 3] |       658 |     19 |     84.76%
+   7 |   4 | [ 2, 4] |       639 |     30 |     86.05%
+   8 |   4 | [ 3, 5] |       609 |     17 |     86.99%
+
+Best-of-n curves (mean closeness %)
+------------------------------------------------------------
+K=1 base (greedy): 73.92%
+
+   n |  cascade_bon% |   temp_bon%
+   1 |         73.92 |       74.23
+   2 |         74.40 |       78.87
+   3 |         77.73 |       81.66
+   4 |         81.83 |       83.03
+   5 |         83.64 |       84.01
+   6 |         83.64 |       84.66
+   7 |         84.76 |       85.30
+   8 |         86.05 |       85.87
+   9 |         86.99 |       86.36
+
+Plot saved to: /leonardo_work/EUHPC_D29_031/run_codes_final/results/countqa_cascade_curve_qwen25_7b.png
+
+============================================================
+FINAL: mean closeness 86.99%  (solved 409/1001, exact 409/1001)
