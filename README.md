@@ -4,7 +4,7 @@
 
 <!-- FIGURE: method overview. Drop the image at figures/method_overview.png -->
 <p align="center">
-  <img src="figures/method_overview.png" alt="Method overview: RVD best-of-n vs temperature baseline" width="720"/>
+  <img src="figs/TTS_fig1.pdf" alt="Method overview: RVD best-of-n vs temperature baseline" width="720"/>
   <br/>
   <em>Figure 1. Method overview. (placeholder — add figures/method_overview.png)</em>
 </p>
