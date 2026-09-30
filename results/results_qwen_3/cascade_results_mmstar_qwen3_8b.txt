@@ -1,0 +1,66 @@
+CV-Bench Cascade Evaluation
+============================================================
+Model:        /leonardo_work/EUHPC_D29_031/models/Qwen3-VL-8B-Instruct
+Dataset dir:  /leonardo_work/EUHPC_D29_031/data/mmstar
+N samples:    1500
+K_eval:       [1, 2, 4]
+block range:  [0, 5]
+window:       3 (stride 1)
+variations:   9
+temp baseline: temp=0.6, n_temp=9
+
+Per-variation results
+------------------------------------------------------------
+ var |   K |    blocks | attempted | solved | cum_solved |  cum_acc%
+   0 |   1 | [ 1, 3] |      1500 |    792 |        792 |    52.80%
+   1 |   2 | [ 0, 2] |       708 |     85 |        877 |    58.47%
+   2 |   2 | [ 1, 3] |       623 |    110 |        987 |    65.80%
+   3 |   2 | [ 2, 4] |       513 |     43 |       1030 |    68.67%
+   4 |   2 | [ 3, 5] |       470 |     44 |       1074 |    71.60%
+   5 |   4 | [ 0, 2] |       426 |     86 |       1160 |    77.33%
+   6 |   4 | [ 1, 3] |       340 |     16 |       1176 |    78.40%
+   7 |   4 | [ 2, 4] |       324 |     43 |       1219 |    81.27%
+   8 |   4 | [ 3, 5] |       281 |     22 |       1241 |    82.73%
+
+Per-task breakdown
+------------------------------------------------------------
+  coarse perception  234/250  (93.60%)
+  fine-grained perception  198/250  (79.20%)
+  instance reasoning  218/250  (87.20%)
+  logical reasoning  217/250  (86.80%)
+  math        181/250  (72.40%)
+  science & technology  193/250  (77.20%)
+
+Per-variation x per-task (samples newly solved)
+------------------------------------------------------------
+ var |   K |    blocks | coarse perception | fine-grained perception | instance reasoning | logical reasoning |       math | science & technology
+   0 |   1 | [ 1, 3] |        187 |        146 |        177 |        125 |         46 |        111
+   1 |   2 | [ 0, 2] |         11 |          6 |          8 |         14 |         29 |         17
+   2 |   2 | [ 1, 3] |          5 |          8 |          9 |         23 |         45 |         20
+   3 |   2 | [ 2, 4] |          2 |          5 |          4 |          9 |         13 |         10
+   4 |   2 | [ 3, 5] |          3 |         11 |          2 |          5 |         17 |          6
+   5 |   4 | [ 0, 2] |         13 |         10 |          8 |         19 |         14 |         22
+   6 |   4 | [ 1, 3] |          2 |          2 |          5 |          5 |          2 |          0
+   7 |   4 | [ 2, 4] |          9 |          6 |          4 |         13 |          8 |          3
+   8 |   4 | [ 3, 5] |          2 |          4 |          1 |          4 |          7 |          4
+
+Best-of-n curves (accuracy %)
+------------------------------------------------------------
+K=1 base (greedy) accuracy: 52.80%
+
+   n |  cascade_bon% |   temp0.6_bon%
+   1 |         52.80 |         53.27
+   2 |         58.47 |         55.33
+   3 |         65.80 |         56.60
+   4 |         68.67 |         57.27
+   5 |         71.60 |         57.93
+   6 |         77.33 |         58.20
+   7 |         78.40 |         58.60
+   8 |         81.27 |         58.80
+   9 |         82.73 |         58.93
+
+Plot saved to: /leonardo_work/EUHPC_D29_031/run_codes_final/results_qwen3/cascade_curve_mmstar_qwen3_8b.png
+
+============================================================
+FINAL: 1241/1500 = 82.73%
+Unsolved: 259

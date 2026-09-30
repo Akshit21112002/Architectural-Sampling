@@ -1,0 +1,66 @@
+CV-Bench Cascade Evaluation
+============================================================
+Model:        /leonardo_work/EUHPC_D29_031/models/Qwen3-VL-2B-Instruct
+Dataset dir:  /leonardo_work/EUHPC_D29_031/data/blink
+N samples:    793
+K_eval:       [1, 2, 4]
+block range:  [0, 5]
+window:       3 (stride 1)
+variations:   9
+temp baseline: temp=0.6, n_temp=9
+
+Per-variation results
+------------------------------------------------------------
+ var |   K |    blocks | attempted | solved | cum_solved |  cum_acc%
+   0 |   1 | [ 1, 3] |       793 |    404 |        404 |    50.95%
+   1 |   2 | [ 0, 2] |       389 |     32 |        436 |    54.98%
+   2 |   2 | [ 1, 3] |       357 |     35 |        471 |    59.39%
+   3 |   2 | [ 2, 4] |       322 |     28 |        499 |    62.93%
+   4 |   2 | [ 3, 5] |       294 |     24 |        523 |    65.95%
+   5 |   4 | [ 0, 2] |       270 |     20 |        543 |    68.47%
+   6 |   4 | [ 1, 3] |       250 |      1 |        544 |    68.60%
+   7 |   4 | [ 2, 4] |       249 |      1 |        545 |    68.73%
+   8 |   4 | [ 3, 5] |       248 |      9 |        554 |    69.86%
+
+Per-task breakdown
+------------------------------------------------------------
+  Counting    95/120  (79.17%)
+  IQ Test     34/150  (22.67%)
+  Object Localization  108/122  (88.52%)
+  Relative Depth  101/124  (81.45%)
+  Relative Reflectance  84/134  (62.69%)
+  Spatial Relation  132/143  (92.31%)
+
+Per-variation x per-task (samples newly solved)
+------------------------------------------------------------
+ var |   K |    blocks |   Counting |    IQ Test | Object Localization | Relative Depth | Relative Reflectance | Spatial Relation
+   0 |   1 | [ 1, 3] |         75 |          5 |         77 |         97 |         38 |        112
+   1 |   2 | [ 0, 2] |          6 |         10 |          9 |          0 |          4 |          3
+   2 |   2 | [ 1, 3] |          8 |          9 |          1 |          1 |         11 |          5
+   3 |   2 | [ 2, 4] |          1 |          0 |          5 |          1 |         15 |          6
+   4 |   2 | [ 3, 5] |          4 |          0 |          5 |          2 |         11 |          2
+   5 |   4 | [ 0, 2] |          0 |          9 |         10 |          0 |          0 |          1
+   6 |   4 | [ 1, 3] |          1 |          0 |          0 |          0 |          0 |          0
+   7 |   4 | [ 2, 4] |          0 |          0 |          0 |          0 |          1 |          0
+   8 |   4 | [ 3, 5] |          0 |          1 |          1 |          0 |          4 |          3
+
+Best-of-n curves (accuracy %)
+------------------------------------------------------------
+K=1 base (greedy) accuracy: 50.95%
+
+   n |  cascade_bon% |   temp0.6_bon%
+   1 |         50.95 |         50.06
+   2 |         54.98 |         56.24
+   3 |         59.39 |         58.76
+   4 |         62.93 |         59.77
+   5 |         65.95 |         60.78
+   6 |         68.47 |         61.92
+   7 |         68.60 |         62.67
+   8 |         68.73 |         63.05
+   9 |         69.86 |         63.43
+
+Plot saved to: /leonardo_work/EUHPC_D29_031/run_codes_final/results_qwen3/cascade_curve_blink_qwen3_2b.png
+
+============================================================
+FINAL: 554/793 = 69.86%
+Unsolved: 239
