@@ -150,13 +150,13 @@ change this one line and re-run the same eval command:
 EVOLUTION_MODE = "all"      # <- change this to ablate which tokens are evolved
 ```
 
-| `EVOLUTION_MODE` | Tokens iterated | Read-back |
+| `EVOLUTION_MODE` | Tokens iterated 
 |---|---|---|
-| `"vision"` | vision only (text frozen) | final (damped) iterate |
-| `"all"` | vision + text | final iterate | 
-| `"language"` | text only (vision frozen) |
-| `"vision_average"` | vision only | mean over all K passes |
-| `"none"` | — | canonical pass |
+| `"vision"` | vision only (text frozen) |
+| `"all"` | vision + text | 
+| `"language"` | text only (vision frozen) | 
+| `"vision_average"` | vision only | 
+| `"none"` | — | 
 
 
 ### Switching model — checklist
