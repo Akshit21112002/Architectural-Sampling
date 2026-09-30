@@ -9,29 +9,6 @@
   <em>Figure 1. Method overview. (placeholder — add figures/method_overview.png)</em>
 </p>
 
-**Method.** Instead of a single greedy decode, we generate several candidate
-answers per (image, question) pair and count a sample as *solved* the first time
-any candidate is correct. Candidates are produced by an **RVD backend**
-(`rvd_qwen_*_evo`) that re-patches the model **in place** with a search
-configuration `(K, block_start, block_end)` — the model is never reloaded between
-variations. We sweep `K` together with a sliding **block-window** and plot the
-resulting **best-of-n** curve against a **temperature best-of-n** baseline
-(unbiased pass@k). Because both use the *same* deterministic verifier, the
-search-vs-temperature comparison is apples-to-apples.
-
-We evaluate three answer types with one eval script each:
-
-| Answer type | Eval script | Datasets |
-|---|---|---|
-| Open-ended **numeric** | `count_bon.py` | CountBenchQA, CountQA |
-| **Multiple choice** | `mcq_bon.py` | CV-Bench, MMStar, AI2D, ScienceQA, A-OKVQA, MMMU, BLINK |
-| **Verifiable** free-form | `realworldqa_bon.py` | RealWorldQA |
-
-The model is selected by which RVD backend the script imports, so the same code
-runs on Qwen2.5-VL, Qwen3-VL and Qwen3.5-VL.
-
----
-
 ## 2. Environment
 
 Tested with **torch 2.5.1+cu121**.
