@@ -138,6 +138,27 @@ python realworldqa_bon.py \
     --plot_output results/realworldqa_bon.png
 ```
 
+### 4.4 Ablation: which tokens to evolve
+
+The recurrent-refinement variant is chosen by `EVOLUTION_MODE`, set once at the
+**top of each `rvd_qwen_*_evo.py` file**. It controls *which* token positions the recurrent
+block iterates on. To run an ablation,
+change this one line and re-run the same eval command:
+
+```python
+# top of rvd_qwen_2_5_evo.py / rvd_qwen_3_evo.py / rvd_qwen_3_5_evo.py
+EVOLUTION_MODE = "all"      # <- change this to ablate which tokens are evolved
+```
+
+| `EVOLUTION_MODE` | Tokens iterated | Read-back | Role |
+|---|---|---|---|
+| `"vision"` | vision only (text frozen) | final (damped) iterate | original RVD behavior |
+| `"all"` | vision + text | final iterate | whole-sequence recurrent depth |
+| `"language"` | text only (vision frozen) | final iterate | mirror control of `"vision"` |
+| `"vision_average"` | vision only | mean over all K passes | smoother averaging baseline |
+| `"none"` | — | canonical pass | pure baseline, equivalent to `K=1` |
+
+
 ### Switching model — checklist
 
 1. Edit the RVD import at the top of the script (Section 2).
@@ -155,11 +176,11 @@ python realworldqa_bon.py \
 <p align="center">
   <img src="figs/mega_qwen3_8b.png" alt="Best-of-n vs temperature best-of-n accuracy" width="720"/>
   <br/>
-  <em>Figure 2. Best-of-n (search) vs temperature baseline. (placeholder — add figures/results_curves.png)</em>
+  <em>Architectural sampling vs Temperature Sampling </em>
 </p>
 
-All runs write their `.txt` reports and `.png` curves to the **`results/`**
-folder. **The collected results are already in `results/` — open that folder to
+All runs wuth their `.txt` reports and `.png` curves are present int the **`results/`**
+folder. **open that folder to
 see the per-dataset logs and best-of-n curves.**
 
 ---
