@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Architectural Sampling: Test-Time Scaling via Computational Diversity in Frozen VLMs</title>
+<meta name="description" content="A training-free way to sample candidates from a frozen vision-language model by reusing blocks of decoder layers. +6.58 pass@9 over temperature sampling across five Qwen checkpoints and twelve benchmarks.">
+<meta property="og:title" content="Architectural Sampling">
+<meta property="og:description" content="Test-time scaling via computational diversity in frozen vision-language models.">
+<meta property="og:image" content="static/figures/fig1_teaser.png">
+<meta name="twitter:card" content="summary_large_image">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400;500;600;700;800&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css">
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js"></script>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/contrib/auto-render.min.js"
+  onload="renderMathInElement(document.body,{delimiters:[{left:'$$',right:'$$',display:true},{left:'\\(',right:'\\)',display:false}]})"></script>
+
+<style>
+  :root {
+    --paper: #F6F7FA;
+    --panel: #FFFFFF;
+    --ink: #1C2342;
+    --ink-2: #4A5170;
+    --rule: #D8DCE6;
+    --arch: #3F72C4;
+    --arch-soft: #DFE8F7;
+    --temp: #8E7CC3;
+    --temp-soft: #ECE7F7;
+    --loop: #D9706A;
+    --loop-soft: #FBE4E2;
+    --sans: "Schibsted Grotesk", system-ui, sans-serif;
+    --serif: "Source Serif 4", Georgia, serif;
+    --wide: 1080px;
+    --text: 680px;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0; background: var(--paper); color: var(--ink);
+    font-family: var(--serif); font-size: 1.125rem; line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: var(--arch); text-underline-offset: 3px; }
+  :focus-visible { outline: 3px solid var(--arch); outline-offset: 3px; border-radius: 4px; }
+  img { max-width: 100%; display: block; }
+
+  .wrap { max-width: var(--wide); margin: 0 auto; padding: 0 24px; }
+  .prose { max-width: var(--text); }
+  h1, h2, h3, .ui { font-family: var(--sans); }
+
+  /* ---------- Header ---------- */
+  header.top { padding: 72px 0 40px; }
+  .head { display: grid; grid-template-columns: 1.5fr 1fr; gap: 48px; align-items: end; }
+  .tldr { font-size: 1.3rem; line-height: 1.55; margin: 0 0 6px; padding-left: 22px; border-left: 3px solid var(--arch); color: var(--ink); }
+  .venue { font-family: var(--sans); font-size: .95rem; color: var(--ink-2); margin: 0 0 20px; }
+  h1 {
+    font-size: clamp(2.4rem, 6vw, 4.6rem); line-height: .98; letter-spacing: -.035em;
+    font-weight: 800; margin: 0; max-width: 15ch;
+  }
+  .subtitle {
+    font-family: var(--sans); font-weight: 500; font-size: clamp(1.15rem, 2.2vw, 1.5rem);
+    line-height: 1.3; letter-spacing: -.01em; color: var(--ink-2); margin: 18px 0 0; max-width: 34ch;
+  }
+  .authors { font-family: var(--sans); margin: 28px 0 0; font-size: 1.05rem; }
+  .authors .aff { color: var(--ink-2); font-size: .95rem; }
+  .links { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 28px; }
+  .btn {
+    display: inline-flex; align-items: center; gap: 8px;
+    font-family: var(--sans); font-weight: 600; font-size: 1rem;
+    color: var(--paper); background: var(--ink); text-decoration: none;
+    padding: 10px 18px; border-radius: 999px; border: 2px solid var(--ink);
+  }
+  .btn svg { width: 18px; height: 18px; }
+  .btn.ghost { background: transparent; color: var(--ink); }
+  .btn:hover { background: var(--arch); border-color: var(--arch); color: #fff; }
+
+  /* ---------- Path explorer (the one bold thing) ---------- */
+  .explorer {
+    background: var(--panel); border: 1px solid var(--rule); border-radius: 20px;
+    display: grid; grid-template-columns: 260px 1fr; overflow: hidden;
+  }
+  .picker { padding: 28px 24px; border-right: 1px solid var(--rule); background: #FBFBFD; }
+  .picker h2 { font-size: 1.05rem; margin: 0 0 4px; letter-spacing: -.01em; }
+  .picker p { font-family: var(--sans); font-size: .9rem; color: var(--ink-2); margin: 0 0 18px; line-height: 1.45; }
+  .grid { display: grid; grid-template-columns: auto 1fr 1fr; gap: 6px 6px; align-items: center; font-family: var(--sans); }
+  .grid .colhead { font-size: .8rem; color: var(--ink-2); text-align: center; }
+  .grid .rowhead { font-size: .9rem; color: var(--ink-2); padding-right: 8px; font-variant-numeric: tabular-nums; }
+  .cand {
+    font: 600 .9rem var(--sans); color: var(--ink); background: var(--panel);
+    border: 1.5px solid var(--rule); border-radius: 10px; padding: 9px 0; cursor: pointer;
+    font-variant-numeric: tabular-nums;
+  }
+  .cand:hover { border-color: var(--arch); }
+  .cand[aria-pressed="true"] { background: var(--ink); border-color: var(--ink); color: #fff; }
+  .cand.std { grid-column: 2 / 4; }
+  .count { margin-top: 18px; font-size: .85rem; color: var(--ink-2); font-family: var(--sans); }
+
+  .stage { padding: 28px 32px 30px; min-width: 0; }
+  .stage-title { font-family: var(--sans); font-weight: 700; font-size: 1.35rem; line-height: 1.25; letter-spacing: -.015em; margin: 0; }
+  .stage-sub { font-family: var(--sans); color: var(--ink-2); font-size: .95rem; margin: 2px 0 24px; }
+
+  .strip { display: flex; align-items: flex-end; gap: 8px; flex-wrap: nowrap; overflow-x: auto; padding: 34px 2px 6px; }
+  .layer {
+    flex: 0 0 auto; width: 52px; height: 52px; border-radius: 12px;
+    display: grid; place-items: center; font-family: var(--serif); font-style: italic; font-size: 1.2rem;
+    background: var(--arch-soft); border: 1.5px solid #B9CBEA; color: var(--ink);
+  }
+  .layer sub { font-style: normal; font-size: .7em; margin-left: 1px; }
+  .gap { flex: 0 0 auto; color: var(--ink-2); font-family: var(--sans); padding: 0 2px 14px; }
+  .loopbox {
+    position: relative; display: flex; gap: 8px; padding: 6px; margin: -7.5px 0;
+    border: 1.5px dashed var(--loop); background: var(--loop-soft); border-radius: 16px;
+  }
+  .loopbox .badge {
+    position: absolute; top: -30px; left: 50%; transform: translateX(-50%);
+    font: 700 .85rem var(--sans); color: var(--loop); white-space: nowrap;
+    display: flex; align-items: center; gap: 4px;
+  }
+  .loopbox .badge svg { width: 18px; height: 18px; }
+
+  .unrolled-label { font-family: var(--sans); font-size: .85rem; color: var(--ink-2); margin: 26px 0 8px; }
+  .unrolled { display: flex; flex-wrap: wrap; gap: 5px; align-items: center; min-height: 34px; }
+  .chip {
+    font-family: var(--serif); font-style: italic; font-size: .95rem; padding: 3px 9px; border-radius: 7px;
+    background: var(--arch-soft); color: var(--ink);
+  }
+  .chip sub { font-style: normal; font-size: .72em; }
+  .chip.re { background: var(--loop-soft); box-shadow: inset 0 0 0 1.5px var(--loop); }
+  .chip.dots { background: none; font-style: normal; color: var(--ink-2); padding: 3px 2px; }
+  .pass { font: 600 .72rem var(--sans); color: var(--loop); margin: 0 1px 0 6px; }
+  .unrolled.play .chip, .unrolled.play .pass { animation: pop .28s both; animation-delay: calc(var(--i) * 38ms); }
+  @keyframes pop { from { opacity: 0; transform: translateY(6px); } }
+
+  .readout { display: flex; flex-wrap: wrap; gap: 10px 36px; margin-top: 26px; padding-top: 18px; border-top: 1px solid var(--rule); font-family: var(--sans); }
+  .readout div { font-size: .9rem; color: var(--ink-2); }
+  .readout strong { display: block; font-size: 1.4rem; color: var(--ink); font-variant-numeric: tabular-nums; letter-spacing: -.01em; }
+
+  /* ---------- Sections ---------- */
+  section { padding: 72px 0 0; }
+  h2.sec { font-size: clamp(1.7rem, 3vw, 2.3rem); letter-spacing: -.025em; line-height: 1.1; margin: 0 0 18px; font-weight: 750; }
+  h3 { font-size: 1.2rem; letter-spacing: -.01em; margin: 36px 0 8px; }
+  p { margin: 0 0 1em; }
+  .lede { font-size: 1.25rem; line-height: 1.6; }
+
+  figure { margin: 36px 0 0; }
+  figure .frame { background: #fff; border: 1px solid var(--rule); border-radius: 16px; padding: 18px; }
+  figcaption { font-family: var(--sans); font-size: .92rem; line-height: 1.5; color: var(--ink-2); margin-top: 12px; max-width: 80ch; }
+  figcaption b { color: var(--ink); }
+  .two { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+
+  .eq { background: #fff; border: 1px solid var(--rule); border-radius: 14px; padding: 6px 18px; margin: 24px 0; overflow-x: auto; }
+  .lav { color: var(--temp); } .blu { color: var(--arch); }
+
+  /* findings list as prose blocks */
+  .findings { display: grid; grid-template-columns: repeat(2, 1fr); gap: 28px 40px; margin-top: 12px; }
+  .findings h3 { margin: 0 0 6px; }
+  .findings p { font-size: 1.02rem; margin: 0; }
+
+  /* ---------- Results explorer ---------- */
+  .tabs { display: flex; flex-wrap: wrap; gap: 6px; margin: 8px 0 18px; }
+  .tab {
+    font: 600 .9rem var(--sans); padding: 7px 14px; border-radius: 999px; cursor: pointer;
+    border: 1.5px solid var(--rule); background: var(--panel); color: var(--ink);
+  }
+  .tab[aria-selected="true"] { background: var(--ink); color: #fff; border-color: var(--ink); }
+  .tab.ext { border-style: dashed; }
+  .legend { font-family: var(--sans); font-size: .88rem; color: var(--ink-2); display: flex; gap: 18px; align-items: center; margin-bottom: 10px; flex-wrap: wrap; }
+  .legend i { display: inline-block; width: 11px; height: 11px; border-radius: 50%; margin-right: 6px; vertical-align: -1px; }
+  .dumb { background: var(--panel); border: 1px solid var(--rule); border-radius: 16px; padding: 10px 22px; font-family: var(--sans); }
+  .drow { display: grid; grid-template-columns: 130px 1fr 74px; align-items: center; gap: 14px; padding: 7px 0; border-bottom: 1px solid #EEF0F5; font-size: .92rem; }
+  .drow:last-child { border-bottom: 0; }
+  .drow.avg { font-weight: 700; }
+  .track { position: relative; height: 22px; }
+  .track .axis { position: absolute; left: 0; right: 0; top: 50%; height: 1px; background: #EEF0F5; }
+  .track .bar { position: absolute; top: calc(50% - 2px); height: 4px; border-radius: 2px; background: #C7D3EA; transition: left .35s, width .35s; }
+  .track .bar.neg { background: #EBC6C3; }
+  .dot { position: absolute; top: 50%; width: 13px; height: 13px; border-radius: 50%; transform: translate(-50%, -50%); transition: left .35s; border: 2px solid #fff; }
+  .dot.t { background: var(--temp); } .dot.a { background: var(--arch); }
+  .delta { text-align: right; font-variant-numeric: tabular-nums; font-weight: 600; color: var(--arch); }
+  .delta.neg { color: var(--loop); }
+  .scale { display: grid; grid-template-columns: 130px 1fr 74px; gap: 14px; font-size: .75rem; color: var(--ink-2); padding-top: 4px; }
+  .scale .ticks { position: relative; height: 1.2em; }
+  .scale .ticks span { position: absolute; transform: translateX(-50%); }
+  .note { font-family: var(--sans); font-size: .88rem; color: var(--ink-2); margin-top: 10px; }
+
+  table.small { border-collapse: collapse; width: 100%; font-family: var(--sans); font-size: .92rem; background: var(--panel); border: 1px solid var(--rule); border-radius: 14px; overflow: hidden; font-variant-numeric: tabular-nums; }
+  table.small th, table.small td { padding: 9px 12px; text-align: right; border-bottom: 1px solid #EEF0F5; }
+  table.small th:first-child, table.small td:first-child { text-align: left; }
+  table.small thead th { background: var(--ink); color: #fff; font-weight: 600; }
+  table.small .grp td { background: #F1F3F8; font-weight: 700; text-align: left; }
+  table.small .up { color: var(--arch); font-size: .8em; font-weight: 600; display: block; }
+  .tablewrap { overflow-x: auto; margin-top: 18px; }
+
+  /* ---------- BibTeX ---------- */
+  .bib { position: relative; background: var(--ink); color: #E7EAF4; border-radius: 16px; padding: 22px 24px; overflow-x: auto; }
+  .bib pre { margin: 0; font: .88rem/1.6 ui-monospace, "SF Mono", Menlo, Consolas, monospace; }
+  .copy { position: absolute; top: 14px; right: 14px; font: 600 .85rem var(--sans); background: #fff; color: var(--ink); border: 0; padding: 7px 13px; border-radius: 999px; cursor: pointer; }
+
+  footer { padding: 80px 0 56px; font-family: var(--sans); font-size: .88rem; color: var(--ink-2); }
+
+  @media (max-width: 860px) {
+    .explorer { grid-template-columns: 1fr; }
+    .head { grid-template-columns: 1fr; gap: 28px; }
+    header.top { padding-top: 48px; }
+    .picker { border-right: 0; border-bottom: 1px solid var(--rule); }
+    .two, .findings { grid-template-columns: 1fr; }
+    .stage { padding: 24px 20px; }
+    .layer { width: 44px; height: 44px; font-size: 1.05rem; }
+    .drow, .scale { grid-template-columns: 96px 1fr 60px; gap: 10px; }
+  }
+  @media (max-width: 480px) {
+    .strip { gap: 5px; }
+    .loopbox { gap: 5px; padding: 4px; margin: -5.5px 0; }
+    .layer { width: 30px; height: 34px; font-size: .9rem; border-radius: 8px; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    .unrolled.play .chip, .unrolled.play .pass { animation: none; }
+    .track .bar, .dot { transition: none; }
+  }
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap head">
+   <div>
+    <p class="venue">Under review </p>
+    <h1>Architectural Sampling</h1>
+    <p class="subtitle">Test-time scaling via computational diversity in frozen vision-language models</p>
+
+    <!-- TODO: replace with real author names and affiliations once anonymity period ends -->
+    <p class="authors">Anonymous authors<br><span class="aff">Paper under double-blind review</span></p>
+
+    <nav class="links" aria-label="Project links">
+      <!-- TODO: update these four links -->
+      <a class="btn" href="static/paper.pdf">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><path d="M14 3v6h6"/></svg>
+        Paper
+      </a>
+      <a class="btn" href="https://arxiv.org/abs/XXXX.XXXXX">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 4l14 16M19 4L5 20"/></svg>
+        arXiv
+      </a>
+      <a class="btn" href="https://github.com/YOUR_USERNAME/YOUR_REPO">
+        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 .5a11.5 11.5 0 0 0-3.64 22.41c.58.1.79-.25.79-.56v-2c-3.2.7-3.88-1.37-3.88-1.37-.53-1.33-1.28-1.69-1.28-1.69-1.05-.72.08-.7.08-.7 1.16.08 1.77 1.19 1.77 1.19 1.03 1.77 2.7 1.26 3.36.96.1-.75.4-1.26.73-1.55-2.55-.29-5.24-1.28-5.24-5.68 0-1.25.45-2.28 1.19-3.08-.12-.3-.52-1.47.11-3.06 0 0 .97-.31 3.17 1.18a11 11 0 0 1 5.78 0c2.2-1.49 3.17-1.18 3.17-1.18.63 1.59.23 2.76.11 3.06.74.8 1.19 1.83 1.19 3.08 0 4.41-2.7 5.38-5.26 5.67.41.36.78 1.06.78 2.14v3.17c0 .31.21.67.8.56A11.5 11.5 0 0 0 12 .5z"/></svg>
+        Code
+      </a>
+      <a class="btn ghost" href="#bibtex">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M7 8h10M7 12h10M7 16h6"/><rect x="3" y="3" width="18" height="18" rx="3"/></svg>
+        BibTeX
+      </a>
+    </nav>
+   </div>
+   <p class="tldr">Temperature sampling asks a frozen model to say more things. Architectural sampling lets it compute in more ways: each candidate reuses a different block of decoder layers, with no training and no new parameters.</p>
+  </div>
+</header>
+
+<!-- ================= Path explorer ================= -->
+<div class="wrap">
+  <div class="explorer" id="explorer">
+    <div class="picker">
+      <h2>One checkpoint, nine paths</h2>
+      <p>Each candidate reuses a different window of early decoder layers. Pick one to see the computation it runs.</p>
+      <div class="grid" role="group" aria-label="Candidate configurations">
+        <span></span><span class="colhead">r = 2</span><span class="colhead">r = 4</span>
+        <span class="rowhead">Standard</span><button class="cand std" data-a="0" data-b="0" data-r="1" aria-pressed="false">r = 1</button>
+      </div>
+      <p class="count">4 windows × 2 depths + the standard path = 9 candidates, all from the same frozen weights.</p>
+    </div>
+
+    <div class="stage" aria-live="polite">
+      <p class="stage-title" id="stageTitle">Window [1:3], repeated 4 times</p>
+      <p class="stage-sub" id="stageSub">Layers outside the window run once, in their original order.</p>
+
+      <div class="strip" id="strip" aria-hidden="true"></div>
+
+      <p class="unrolled-label">Layers actually applied, in order</p>
+      <div class="unrolled" id="unrolled"></div>
+
+      <div class="readout">
+        <div><strong id="apps">41</strong>layer applications (32-layer decoder)</div>
+        <div><strong id="cost">1.28×</strong>cost of a standard pass</div>
+        <div><strong id="lat">6.56 s</strong>per candidate, Qwen3-VL-8B on A100</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<main class="wrap">
+
+  <!-- ================= Abstract ================= -->
+  <section id="abstract">
+    <div class="prose">
+      <h2 class="sec">Abstract</h2>
+      <p class="lede">Test-time scaling often seeks better answers by sampling multiple responses from a frozen model, yet conventional temperature sampling generates every candidate along the same fixed computation path.</p>
+      <p>We introduce <em>architectural sampling</em>, a training-free method that generates candidates through distinct forward computations by reusing selected blocks of decoder layers. Varying the block location and repetition count introduces computational diversity without updating model weights or adding auxiliary parameters. Across five Qwen checkpoints and twelve multimodal benchmarks, architectural sampling improves pass@9 over standard-path temperature sampling by 6.58 percentage points on average at the same nine-candidate budget. Reusing early layers yields the strongest gains, and the improvement in candidate coverage persists even under greedy decoding. The resulting candidates show lower lexical overlap and improve accuracy when used as rollouts for label-free test-time reinforcement learning.</p>
+    </div>
+
+    <figure>
+      <div class="frame"><img src="static/figures/fig1_teaser.png" alt="Two 3D answer-space landscapes. Left: temperature sampling sends three trajectories from the same starting point to the same dog-region peak, producing near-identical answers. Right: architectural sampling sends four trajectories along different computation paths to different regions, producing answers like 'a golden retriever' and 'a dog in the mountain'." loading="lazy"></div>
+      <figcaption><b>Two sources of candidate diversity.</b> Temperature sampling (left) draws several outputs from the same computation path. Architectural sampling (right) changes the computation path itself, starting from the same multimodal representation \(h^{(0)}\), and produces one candidate per path. The landscape is a conceptual illustration of the answer space.</figcaption>
+    </figure>
+  </section>
+
+  <!-- ================= Method ================= -->
+  <section id="method">
+    <div class="prose">
+      <h2 class="sec">How it works</h2>
+      <p>Temperature only acts at the very last step: every candidate passes through the same layers with the same intermediate representations, and only the final draw differs. Architectural sampling moves the source of diversity upstream, into the computation.</p>
+      <p>For each candidate we pick a short contiguous window of decoder layers \(B_{[a:b]} = f_b \circ \cdots \circ f_a\), apply it \(r\) times, then resume the original forward pass. The prefix and suffix stay untouched:</p>
+    </div>
+    <div class="eq prose">
+      $$h^{(L)} = \underbrace{f_L \circ \cdots \circ f_{b+1}}_{\text{suffix (fixed)}} \circ \underbrace{\color{#8E7CC3}{\big(B_{[a:b]}\big)}^{\color{#3F72C4}{\circ r}}}_{\text{window} \times r} \circ \underbrace{f_{a-1} \circ \cdots \circ f_1}_{\text{prefix (fixed)}}\big(h^{(0)}\big)$$
+    </div>
+    <div class="prose">
+      <p>Setting \(r = 1\) recovers the standard forward pass exactly. The weights stay frozen, nothing is trained, and each path can still be decoded greedily or with temperature, so architectural and token-level variation combine.</p>
+    </div>
+    <figure>
+      <div class="frame"><img src="static/figures/fig3_method.png" alt="Diagram: an image and question are encoded into h0, which is fed into a standard VLM with layers f1 to fL and three effective VLMs, each repeating a different highlighted window of layers r times, producing different candidate answers such as 'A dog', 'A brown and white dog', 'A Labrador', and 'A canine'." loading="lazy"></div>
+      <figcaption><b>Architectural sampling from a frozen VLM.</b> The standard path applies every decoder layer once. Each architectural path repeats one contiguous window \(r\) times before continuing through the remaining layers. All paths share the same frozen weights.</figcaption>
+    </figure>
+  </section>
+
+  <!-- ================= Results ================= -->
+  <section id="results">
+    <div class="prose">
+      <h2 class="sec">Results</h2>
+      <p>At an equal budget of nine candidates and the same decoding temperature (\(T = 0.6\)), architectural sampling raises pass@9 by <strong>6.58 points</strong> on average and wins in 55 of 60 checkpoint–benchmark pairs. Choose a model to compare the two candidate pools.</p>
+    </div>
+
+    <div class="tabs" role="tablist" aria-label="Model" id="tabs"></div>
+    <div class="legend"><span><i style="background:var(--temp)"></i>Temperature sampling</span><span><i style="background:var(--arch)"></i>Architectural sampling</span><span>pass@9, %</span></div>
+    <div class="dumb" id="dumb" role="tabpanel"></div>
+    <p class="note" id="dumbNote"></p>
+
+    <figure>
+      <div class="frame"><img src="static/figures/fig2_scaling.png" alt="Six line charts of pass@k from k=1 to 9 for Qwen3-VL-8B on AI2D, A-OKVQA, BLINK, CV-Bench, MMMU and ScienceQA. The architectural sampling curve keeps rising while temperature sampling flattens early." loading="lazy"></div>
+      <figcaption><b>Coverage keeps growing with the candidate budget.</b> pass@k of Qwen3-VL-8B as k grows. Temperature sampling plateaus early; architectural sampling keeps finding new correct answers.</figcaption>
+    </figure>
+  </section>
+
+  <!-- ================= Analysis ================= -->
+  <section id="analysis">
+    <div class="prose"><h2 class="sec">What makes it work</h2></div>
+    <div class="findings">
+      <div>
+        <h3>Early layers matter most</h3>
+        <p>Every window placement beats temperature sampling, but gains shrink as the window moves deeper. Early windows score highest on all five ablation benchmarks.</p>
+      </div>
+      <div>
+        <h3>Reprocess both modalities</h3>
+        <p>Updating visual and language tokens together works best. Language-only updates keep most of the gain; visual-only updates keep less.</p>
+      </div>
+      <div>
+        <h3>It works even with greedy decoding</h3>
+        <p>At \(T = 0\), repeated calls to the standard model return the same answer. Architectural candidates stay diverse, and pass@9 is stable across temperatures.</p>
+      </div>
+      <div>
+        <h3>Answers overlap less</h3>
+        <p>Mean lexical diversity (1 − Self-BLEU) is 0.51 for architectural candidates versus 0.22 for temperature samples. It also beats beam search, top-k and top-p at the same budget.</p>
+      </div>
+    </div>
+    <figure>
+      <div class="frame"><img src="static/figures/fig4_temp_diversity.png" alt="Left: pass@9 for five benchmarks stays nearly flat as sampling temperature goes from 0 to 1. Right: distributions of lexical diversity, with temperature samples centered near 0.22 and architectural samples near 0.51." loading="lazy"></div>
+      <figcaption><b>Temperature robustness and candidate diversity</b> on Qwen3-VL-8B. Left: pass@9 holds steady from greedy decoding to \(T = 1\). Right: architectural candidates sit at markedly higher lexical diversity.</figcaption>
+    </figure>
+  </section>
+
+  <!-- ================= TTRL ================= -->
+  <section id="learning">
+    <div class="prose">
+      <h2 class="sec">Better rollouts for test-time learning</h2>
+      <p>We swap the temperature-sampled rollouts in TTRV, a label-free GRPO-based test-time RL method, for architectural candidates. No ground-truth labels are used; rewards come from majority vote over the model's own outputs. Accuracy improves on every benchmark for both backbones.</p>
+    </div>
+    <div class="tablewrap">
+      <table class="small">
+        <thead><tr><th>pass@1 after TTRV</th><th>CV-Bench</th><th>MMStar</th><th>AI2D</th><th>A-OKVQA</th><th>ScienceQA</th><th>CountBench</th></tr></thead>
+        <tbody>
+          <tr class="grp"><td colspan="7">Qwen3.5-VL-2B</td></tr>
+          <tr><td>Temperature rollouts</td><td>74.60</td><td>45.52</td><td>75.38</td><td>68.04</td><td>67.01</td><td>93.06</td></tr>
+          <tr><td>Architectural rollouts</td><td>80.29<span class="up">+5.69</span></td><td>49.17<span class="up">+3.66</span></td><td>76.94<span class="up">+1.56</span></td><td>83.38<span class="up">+15.34</span></td><td>77.33<span class="up">+10.32</span></td><td>95.10<span class="up">+2.04</span></td></tr>
+          <tr class="grp"><td colspan="7">Qwen3-VL-8B</td></tr>
+          <tr><td>Temperature rollouts</td><td>86.17</td><td>53.93</td><td>76.61</td><td>87.40</td><td>84.75</td><td>93.17</td></tr>
+          <tr><td>Architectural rollouts</td><td>86.29<span class="up">+0.11</span></td><td>55.52<span class="up">+1.59</span></td><td>77.80<span class="up">+1.17</span></td><td>87.95<span class="up">+0.55</span></td><td>88.82<span class="up">+4.07</span></td><td>96.93<span class="up">+3.76</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ================= More curves ================= -->
+  <section id="more">
+    <div class="prose">
+      <h2 class="sec">More scaling curves</h2>
+      <p>The same trend holds on other checkpoints, though not uniformly across every panel.</p>
+    </div>
+    <div class="two">
+      <figure>
+        <div class="frame"><img src="static/figures/fig5_qwen25.png" alt="pass@k curves for Qwen2.5-VL-7B on six benchmarks; architectural sampling ends above temperature sampling on all six." loading="lazy"></div>
+        <figcaption><b>Qwen2.5-VL-7B</b></figcaption>
+      </figure>
+      <figure>
+        <div class="frame"><img src="static/figures/fig6_qwen35.png" alt="pass@k curves for Qwen3.5-VL-4B on six benchmarks; temperature sampling leads at small k on some benchmarks, architectural sampling pulls ahead by k=9." loading="lazy"></div>
+        <figcaption><b>Qwen3.5-VL-4B</b></figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <!-- ================= Limitations ================= -->
+  <section id="limitations">
+    <div class="prose">
+      <h2 class="sec">Limitations</h2>
+      <p>Reusing layers adds forward cost: the nine architectural candidates take about 10.5 standard decoder traversals versus 9.0 for temperature sampling (53.8 s vs. 46.1 s on Qwen3-VL-8B). The method also needs access to internal decoder layers, so it cannot be used with closed models served only through an API.</p>
+    </div>
+  </section>
+
+  <!-- ================= BibTeX ================= -->
+  <section id="bibtex">
+    <div class="prose"><h2 class="sec">Citation</h2></div>
+    <div class="bib">
+      <button class="copy" id="copyBib" type="button">Copy</button>
+<!-- TODO: replace with your final BibTeX entry -->
+<pre id="bibText">@inproceedings{architecturalsampling2027,
+  title     = {Architectural Sampling: Test-Time Scaling via Computational
+               Diversity in Frozen Vision-Language Models},
+  author    = {Anonymous},
+  booktitle = {Under review},
+  year      = {2027}
+}</pre>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    Figures and results are from the paper. Page source is in the <code>docs/</code> folder of the project repository.
+  </div>
+</footer>
+
+<script>
+/* ---------------- Path explorer ---------------- */
+(() => {
+  const L = 32;
+  const windows = [[1,3],[2,4],[3,5],[4,6]];
+  const latency = {1: 5.12, 2: 5.60, 4: 6.56};
+  const grid = document.querySelector('.grid');
+  windows.forEach(([a,b]) => {
+    const head = document.createElement('span');
+    head.className = 'rowhead'; head.textContent = `[${a}:${b}]`;
+    grid.appendChild(head);
+    [2,4].forEach(r => {
+      const btn = document.createElement('button');
+      btn.className = 'cand'; btn.dataset.a = a; btn.dataset.b = b; btn.dataset.r = r;
+      btn.setAttribute('aria-pressed', 'false');
+      btn.setAttribute('aria-label', `Window ${a} to ${b}, repeated ${r} times`);
+      btn.textContent = `r = ${r}`;
+      grid.appendChild(btn);
+    });
+  });
+
+  const f = (i, cls = 'chip') => `<span class="${cls}">f<sub>${i}</sub></span>`;
+  const strip = document.getElementById('strip');
+  const unrolled = document.getElementById('unrolled');
+  const loopIcon = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M20 12a8 8 0 1 1-2.34-5.66"/><path d="M20 4v5h-5"/></svg>';
+
+  function render(a, b, r, animate = true) {
+    // layer strip: f1..f8, gap, fL
+    let html = '';
+    for (let i = 1; i <= 8; i++) {
+      if (r > 1 && i === a) html += `<div class="loopbox"><span class="badge">${loopIcon}× ${r}</span>`;
+      html += `<div class="layer"><span>f<sub>${i}</sub></span></div>`;
+      if (r > 1 && i === b) html += `</div>`;
+    }
+    html += `<span class="gap">⋯</span><div class="layer"><span>f<sub>L</sub></span></div>`;
+    strip.innerHTML = html;
+
+    // unrolled sequence
+    const items = [];
+    if (r === 1) {
+      for (let i = 1; i <= 6; i++) items.push(f(i));
+    } else {
+      for (let i = 1; i < a; i++) items.push(f(i));
+      for (let p = 1; p <= r; p++) {
+        items.push(`<span class="pass">pass ${p}</span>`);
+        for (let i = a; i <= b; i++) items.push(f(i, 'chip re'));
+      }
+      items.push(f(b + 1));
+      items.push(f(b + 2));
+    }
+    items.push('<span class="chip dots">⋯</span>', '<span class="chip">f<sub>L</sub></span>');
+    unrolled.innerHTML = items.map((s, i) => s.replace('class="', `style="--i:${i}" class="`)).join('');
+    unrolled.classList.remove('play');
+    if (animate) { void unrolled.offsetWidth; unrolled.classList.add('play'); }
+
+    const size = r === 1 ? 0 : b - a + 1;
+    const apps = L + (r - 1) * size;
+    document.getElementById('apps').textContent = apps;
+    document.getElementById('cost').textContent = (apps / L).toFixed(2) + '×';
+    document.getElementById('lat').textContent = latency[r].toFixed(2) + ' s';
+    document.getElementById('stageTitle').textContent = r === 1
+      ? 'Standard path, every layer once'
+      : `Window [${a}:${b}], repeated ${r} times`;
+    document.getElementById('stageSub').textContent = r === 1
+      ? 'This is the path temperature sampling uses for all nine of its candidates.'
+      : `Layers ${a}–${b} reprocess the representation ${r} times; everything else runs once, in order.`;
+
+    grid.querySelectorAll('.cand').forEach(btn => {
+      const on = +btn.dataset.a === a && +btn.dataset.b === b && +btn.dataset.r === r;
+      btn.setAttribute('aria-pressed', on);
+    });
+  }
+
+  grid.addEventListener('click', e => {
+    const btn = e.target.closest('.cand');
+    if (!btn) return;
+    render(+btn.dataset.a, +btn.dataset.b, +btn.dataset.r);
+  });
+  render(1, 3, 4, !matchMedia('(prefers-reduced-motion: reduce)').matches);
+})();
+
+/* ---------------- Results dumbbell ---------------- */
+(() => {
+  const B12 = ['CV-Bench','RealWorldQA','CountBench','MathVista','MMStar','AI2D','GQA','A-OKVQA','ScienceQA','CountQA','MMMU','BLINK'];
+  const B5 = ['CV-Bench','MMStar','AI2D','A-OKVQA','ScienceQA'];
+  const data = {
+    'Qwen2.5-VL-7B': { b: B12, avg: [85.67, 89.75],
+      t: [92.46,86.67,97.75,72.60,79.47,90.75,70.15,93.36,92.71,86.36,78.28,87.52],
+      a: [95.72,89.80,98.82,75.20,86.80,95.52,76.50,97.03,97.37,86.99,83.15,94.07] },
+    'Qwen3-VL-2B': { b: B12, avg: [69.25, 75.40],
+      t: [85.22,72.29,94.62,43.70,53.33,74.85,64.60,85.68,75.66,82.30,35.33,63.43],
+      a: [89.58,85.23,96.94,50.90,60.20,76.83,70.70,88.91,81.01,85.84,48.81,69.86] },
+    'Qwen3-VL-8B': { b: B12, avg: [75.00, 87.43],
+      t: [88.48,72.94,97.27,58.70,58.93,84.89,64.75,88.65,88.75,76.52,48.56,71.50],
+      a: [96.40,88.10,98.83,64.10,82.73,93.48,76.20,95.72,97.97,86.05,80.27,89.28] },
+    'Qwen3.5-VL-2B': { b: B12, avg: [82.00, 83.10],
+      t: [91.70,85.75,98.08,65.60,73.47,92.03,71.25,91.79,92.02,82.14,59.93,80.20],
+      a: [94.20,92.94,98.46,63.70,74.27,85.58,78.40,94.41,90.68,87.16,55.93,81.46] },
+    'Qwen3.5-VL-4B': { b: B12, avg: [67.07, 76.20],
+      t: [68.42,88.50,97.47,64.80,42.60,49.18,72.20,87.34,63.71,77.34,30.21,63.05],
+      a: [91.39,92.16,98.09,66.80,58.87,65.24,76.85,88.82,75.71,76.73,46.32,77.43] },
+    'InternVL3-2B': { b: B5, avg: [92.80, 94.35], ext: true,
+      t: [94.62,85.07,93.55,94.50,96.28], a: [95.87,87.87,93.52,96.16,98.31] },
+    'Gemma3-4B': { b: B5, avg: [66.11, 83.74], ext: true,
+      t: [57.96,45.73,72.19,80.00,74.67], a: [81.27,70.13,87.26,91.88,88.15] },
+  };
+  const MIN = 30, MAX = 100;
+  const x = v => ((v - MIN) / (MAX - MIN) * 100).toFixed(2) + '%';
+  const tabs = document.getElementById('tabs');
+  const panel = document.getElementById('dumb');
+  const note = document.getElementById('dumbNote');
+
+  const row = (name, t, a, avg = false) => {
+    const d = a - t, lo = Math.min(t, a), hi = Math.max(t, a);
+    return `<div class="drow${avg ? ' avg' : ''}">
+      <span>${name}</span>
+      <div class="track" role="img" aria-label="${name}: temperature ${t.toFixed(2)}, architectural ${a.toFixed(2)}">
+        <span class="axis"></span>
+        <span class="bar${d < 0 ? ' neg' : ''}" style="left:${x(lo)};width:calc(${x(hi)} - ${x(lo)})"></span>
+        <span class="dot t" style="left:${x(t)}"></span>
+        <span class="dot a" style="left:${x(a)}"></span>
+      </div>
+      <span class="delta${d < 0 ? ' neg' : ''}">${d >= 0 ? '+' : '−'}${Math.abs(d).toFixed(2)}</span>
+    </div>`;
+  };
+
+  function show(name) {
+    const m = data[name];
+    panel.innerHTML = m.b.map((b, i) => row(b, m.t[i], m.a[i])).join('')
+      + row('Average', m.avg[0], m.avg[1], true)
+      + `<div class="scale"><span></span><div class="ticks">${[30,40,50,60,70,80,90,100].map(v => `<span style="left:${x(v)}">${v}</span>`).join('')}</div><span></span></div>`;
+    note.textContent = m.ext
+      ? 'Beyond Qwen: evaluated on a five-benchmark subset.'
+      : 'All twelve benchmarks, nine candidates per pool, T = 0.6.';
+    tabs.querySelectorAll('.tab').forEach(t => t.setAttribute('aria-selected', t.dataset.m === name));
+  }
+
+  Object.keys(data).forEach(name => {
+    const t = document.createElement('button');
+    t.className = 'tab' + (data[name].ext ? ' ext' : '');
+    t.setAttribute('role', 'tab'); t.dataset.m = name; t.textContent = name;
+    t.addEventListener('click', () => show(name));
+    tabs.appendChild(t);
+  });
+  show('Qwen3-VL-8B');
+})();
+
+/* ---------------- BibTeX copy ---------------- */
+document.getElementById('copyBib').addEventListener('click', async e => {
+  try {
+    await navigator.clipboard.writeText(document.getElementById('bibText').textContent);
+    e.target.textContent = 'Copied';
+  } catch { e.target.textContent = 'Select and copy manually'; }
+  setTimeout(() => e.target.textContent = 'Copy', 1800);
+});
+</script>
+</body>
+</html>
