@@ -6,7 +6,7 @@
 <p align="center">
   <img src="figs/TTS_fig1.png" alt="Method overview: RVD best-of-n vs temperature baseline" width="720"/>
   <br/>
-  <em>Figure 1. Method overview. (placeholder — add figures/method_overview.png)</em>
+  <em>Two sources of candidate diversity. Temperature sampling (left) draws several outputs from the same computation path. Architectural sampling (right) changes the computation path itself, starting from the same multimodal representation h<sup>(0)</sup>, and produces one candidate per path. The landscape is a conceptual illustration of the answer space</em>
 </p>
 
 ## 2. Environment
