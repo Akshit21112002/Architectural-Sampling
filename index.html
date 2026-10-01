@@ -64,8 +64,16 @@
     font-family: var(--sans); font-weight: 500; font-size: clamp(1.15rem, 2.2vw, 1.5rem);
     line-height: 1.3; letter-spacing: -.01em; color: var(--ink-2); margin: 18px 0 0; max-width: 34ch;
   }
-  .authors { font-family: var(--sans); margin: 28px 0 0; font-size: 1.05rem; }
-  .authors .aff { color: var(--ink-2); font-size: .95rem; }
+  .people { font-family: var(--sans); margin-top: 30px; }
+  .people ul { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; }
+  .authors { gap: 6px 22px; font-size: 1.12rem; font-weight: 600; letter-spacing: -.005em; }
+  .authors li { white-space: nowrap; }
+  .people sup { color: var(--arch); font-weight: 700; font-size: .66em; margin-left: 2px; }
+  .affs { gap: 4px 20px; margin-top: 14px; font-size: .98rem; color: var(--ink-2); }
+  .affs sup { margin: 0 3px 0 0; }
+  .contact { margin: 12px 0 0; font-size: .92rem; color: var(--ink-2); }
+  .contact a { color: var(--ink); text-decoration-color: var(--rule); }
+  .contact a:hover { color: var(--arch); text-decoration-color: currentColor; }
   .links { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 28px; }
   .btn {
     display: inline-flex; align-items: center; gap: 8px;
@@ -225,12 +233,24 @@
 <header class="top">
   <div class="wrap head">
    <div>
-    <!-- <p class="venue">Under review at ICLR 2027</p> -->
     <h1>Architectural Sampling</h1>
     <p class="subtitle">Test-time scaling via computational diversity in frozen vision-language models</p>
 
-    <!-- TODO: replace with real author names and affiliations once anonymity period ends -->
-    <p class="authors">Anonymous authors<br></p>
+    <div class="people">
+      <ul class="authors">
+        <li>Akshit Singh<sup>1</sup></li>
+        <li>Shyam Marjit<sup>2</sup></li>
+        <li>Wei Lin<sup>3</sup></li>
+        <li>Leonid Karlinsky<sup>3</sup></li>
+        <li>M. Jehanzeb Mirza<sup>3</sup></li>
+      </ul>
+      <ul class="affs">
+        <li><sup>1</sup>Dartmouth College</li>
+        <li><sup>2</sup>IISc Bangalore</li>
+        <li><sup>3</sup>Xero</li>
+      </ul>
+      <p class="contact">Correspondence: <a href="mailto:akshitsingh21112002@gmail.com">akshitsingh21112002@gmail.com</a></p>
+    </div>
 
     <nav class="links" aria-label="Project links">
       <!-- TODO: update these four links -->
@@ -414,12 +434,12 @@
     <div class="prose"><h2 class="sec">Citation</h2></div>
     <div class="bib">
       <button class="copy" id="copyBib" type="button">Copy</button>
-<!-- TODO: replace with your final BibTeX entry -->
-<pre id="bibText">@inproceedings{architecturalsampling2027,
+<pre id="bibText">@inproceedings{singh2027architectural,
   title     = {Architectural Sampling: Test-Time Scaling via Computational
                Diversity in Frozen Vision-Language Models},
-  author    = {Anonymous},
-  booktitle = {Under review },
+  author    = {Singh, Akshit and Marjit, Shyam and Lin, Wei and
+               Karlinsky, Leonid and Mirza, M. Jehanzeb},
+  booktitle = {Under review},
   year      = {2027}
 }</pre>
     </div>
