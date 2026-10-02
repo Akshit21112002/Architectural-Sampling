@@ -9,6 +9,21 @@
   <em>Two sources of candidate diversity. Temperature sampling (left) draws several outputs from the same computation path. Architectural sampling (right) changes the computation path itself, starting from the same multimodal representation h<sup>(0)</sup>, and produces one candidate per path. The landscape is a conceptual illustration of the answer space</em>
 </p>
 
+<p align="center">
+  <a href="https://akshit21112002.github.io/Architectural-Sampling/">
+    <img src="https://img.shields.io/badge/🌐%20Project%20Page-Visit%20Project-blue?style=for-the-badge" alt="Project Page"/>
+  </a>
+  &nbsp;&nbsp;
+  <a href="https://arxiv.org/abs/2610.01687">
+    <img src="https://img.shields.io/badge/📄%20arXiv-Read%20Paper-B31B1B?style=for-the-badge" alt="arXiv"/>
+  </a>
+</p>
+
+<p align="center">
+  <em>For further details, please visit the project page or read the full paper on arXiv.</em>
+</p>
+
+
 ## 2. Environment
 
 Tested with **torch 2.5.1+cu121**.
